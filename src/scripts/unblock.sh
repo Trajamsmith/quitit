@@ -1,0 +1,1 @@
+cat ./unblockedHosts.txt > /etc/hosts

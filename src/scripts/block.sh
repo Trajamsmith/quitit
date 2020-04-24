@@ -1,0 +1,1 @@
+cat ./blockedHosts.txt > /etc/hosts
