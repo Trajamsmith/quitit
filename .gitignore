@@ -1,4 +1,5 @@
 node_modules
+dist
 
 # These should never be shared
 credentials.json
