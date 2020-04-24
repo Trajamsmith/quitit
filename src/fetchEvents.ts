@@ -9,71 +9,83 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 // time.
 const TOKEN_PATH = 'token.json'
 
-// Load client secrets from a local file.
-fs.readFile('credentials.json', 'utf8', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err)
-    // Authorize a client with credentials, then call the Google Calendar API.
-    authorize(JSON.parse(content), listEvents)
-})
+const fetchEvents = async () => {
+    // Load client secrets from a local file.
+    const credentials = await fs.promises.readFile('credentials.json', 'utf-8')
+    const { client_secret, client_id, redirect_uris } = JSON.parse(
+        credentials
+    ).installed
 
-/**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
-function authorize(credentials, callback) {
-    const { client_secret, client_id, redirect_uris } = credentials.installed
     const oAuth2Client = new google.auth.OAuth2(
         client_id,
         client_secret,
         redirect_uris[0]
     )
 
+    try {
+        const auth = await authorize(oAuth2Client)
+        listEvents(auth)
+    } catch {
+        const auth = await getAccessToken(oAuth2Client)
+        listEvents(auth)
+    }
+}
+
+fetchEvents()
+
+/**
+ * Create an OAuth2 client with the given credentials.
+ * @param {Object} credentials The authorization client credentials.
+ */
+const authorize = async (oAuth2Client) => {
     // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, 'utf8', (err, token) => {
-        if (err) return getAccessToken(oAuth2Client, callback)
-        oAuth2Client.setCredentials(JSON.parse(token))
-        callback(oAuth2Client)
-    })
+    const token = await fs.promises.readFile(TOKEN_PATH, 'utf8')
+    return oAuth2Client.setCredentials(JSON.parse(token))
 }
 
 /**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
+ * Get and store new token after prompting for user authorization.
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
  */
-function getAccessToken(oAuth2Client, callback) {
+const getAccessToken = async (oAuth2Client) => {
+    let token: string
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES,
     })
     console.log('Authorize this app by visiting this url:', authUrl)
+
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     })
     rl.question('Enter the code from that page here: ', (code) => {
         rl.close()
-        oAuth2Client.getToken(code, (err, token) => {
+        oAuth2Client.getToken(code, async (err, newToken) => {
             if (err) return console.error('Error retrieving access token', err)
-            oAuth2Client.setCredentials(token)
+
+            token = newToken
             // Store the token to disk for later program executions
-            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-                if (err) return console.error(err)
+            try {
+                await fs.promises.writeFile(
+                    TOKEN_PATH,
+                    JSON.stringify(newToken)
+                )
                 console.log('Token stored to', TOKEN_PATH)
-            })
-            callback(oAuth2Client)
+            } catch (err) {
+                console.log(err)
+            }
         })
     })
+
+    return oAuth2Client.setCredentials(token)
 }
 
 /**
  * Lists the next 10 events on the user's primary calendar.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listEvents(auth) {
+const listEvents = (auth) => {
     const calendar = google.calendar({ version: 'v3', auth })
     calendar.events.list(
         {

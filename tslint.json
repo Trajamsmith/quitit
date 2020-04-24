@@ -1,20 +1,11 @@
 {
     "defaultSeverity": "error",
-    "extends": [
-        "tslint:latest",
-        "tslint-config-prettier"
-    ],
+    "extends": ["tslint:latest", "tslint-config-prettier"],
     "jsRules": {},
     "rules": {
         "no-console": false,
-        "semicolon": [
-            true,
-            "never"
-        ],
-        "quotemark": [
-            true,
-            "single"
-        ],
+        "semicolon": [true, "never"],
+        "quotemark": [true, "single"],
         "prefer-const": [
             true,
             {

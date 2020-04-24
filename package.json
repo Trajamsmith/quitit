@@ -1,29 +1,31 @@
 {
-  "name": "quitit",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "tsc && node dist/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Trajamsmith/quitit.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Trajamsmith/quitit/issues"
-  },
-  "homepage": "https://github.com/Trajamsmith/quitit#readme",
-  "dependencies": {
-    "googleapis": "^39.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^13.13.2",
-    "tslint": "^6.1.1",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.8.3"
-  }
+    "name": "quitit",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "tsc && node -r esm dist/fetchEvents.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Trajamsmith/quitit.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Trajamsmith/quitit/issues"
+    },
+    "homepage": "https://github.com/Trajamsmith/quitit#readme",
+    "dependencies": {
+        "cron-parser": "^2.13.0",
+        "esm": "^3.2.25",
+        "googleapis": "^49.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^13.13.2",
+        "tslint": "^6.1.1",
+        "tslint-config-prettier": "^1.18.0",
+        "typescript": "^3.8.3"
+    }
 }
