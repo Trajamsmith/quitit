@@ -1,11 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
-const readline = require('readline');
-const { google } = require('googleapis');
+import fs from 'fs';
+import readline from 'readline';
+import { google } from 'googleapis';
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -13,7 +8,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // time.
 const TOKEN_PATH = 'token.json';
 // Load client secrets from a local file.
-fs_1.default.readFile('credentials.json', (err, content) => {
+fs.readFile('credentials.json', "utf8", (err, content) => {
     if (err)
         return console.log('Error loading client secret file:', err);
     // Authorize a client with credentials, then call the Google Calendar API.
@@ -29,7 +24,7 @@ function authorize(credentials, callback) {
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     // Check if we have previously stored a token.
-    fs_1.default.readFile(TOKEN_PATH, (err, token) => {
+    fs.readFile(TOKEN_PATH, "utf8", (err, token) => {
         if (err)
             return getAccessToken(oAuth2Client, callback);
         oAuth2Client.setCredentials(JSON.parse(token));
@@ -59,7 +54,7 @@ function getAccessToken(oAuth2Client, callback) {
                 return console.error('Error retrieving access token', err);
             oAuth2Client.setCredentials(token);
             // Store the token to disk for later program executions
-            fs_1.default.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
                 if (err)
                     return console.error(err);
                 console.log('Token stored to', TOKEN_PATH);

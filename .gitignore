@@ -1,3 +1,5 @@
+node_modules
+
 # These should never be shared
 credentials.json
 token.json
