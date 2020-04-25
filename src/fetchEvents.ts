@@ -1,3 +1,8 @@
+/**
+ * This script is a hideous adaptation of Google's example Node
+ * implementation of the Calendar API. It needs to be revisited.
+ */
+
 import fs from 'fs'
 import readline from 'readline'
 import { google, calendar_v3 } from 'googleapis'
@@ -25,42 +30,11 @@ const fetchEvents = async () => {
     try {
         // Check if we have previously stored a token.
         const token = await fs.promises.readFile(TOKEN_PATH, 'utf8')
-        console.log('TOKEN', token)
         oAuth2Client.setCredentials(JSON.parse(token))
-        console.log('AUTH', oAuth2Client)
-        listEvents(oAuth2Client)
+        return listEvents(oAuth2Client)
     } catch {
         // If no token is stored locally, we have to fetch one
-        const auth = await getAccessToken(oAuth2Client)
-        listEvents(auth)
-    }
-}
-
-const listEvents = async (auth) => {
-    const calendar = google.calendar({ version: 'v3', auth })
-    const listOptions = {
-        calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime',
-    }
-
-    try {
-        const events = await calendar.events.list(listOptions)
-        //@ts-ignore
-        if (events.length) {
-            console.log('Upcoming 10 events:')
-            //@ts-ignore
-            events.map((event, i) => {
-                const start = event.start.dateTime || event.start.date
-                console.log(`${start} - ${event.summary}`)
-            })
-        } else {
-            console.log('No upcoming events found.')
-        }
-    } catch (err) {
-        console.log('There was an API error: ', err)
+        getAccessToken(oAuth2Client)
     }
 }
 
@@ -77,6 +51,7 @@ const getAccessToken = async (oAuth2Client) => {
         output: process.stdout,
     })
     rl.question('Enter the code from that page here: ', async (code) => {
+        rl.close()
         try {
             const { tokens } = await oAuth2Client.getToken(code)
             token = tokens
@@ -85,10 +60,25 @@ const getAccessToken = async (oAuth2Client) => {
         } catch (err) {
             console.error('Error retrieving access token', err)
         }
-        rl.close()
     })
+}
 
-    return oAuth2Client.setCredentials(token)
+const listEvents = async (auth) => {
+    const calendar = google.calendar({ version: 'v3', auth })
+    const listOptions = {
+        calendarId: 'primary',
+        timeMin: new Date().toISOString(),
+        maxResults: 10,
+        singleEvents: true,
+        orderBy: 'startTime',
+    }
+
+    try {
+        const { data } = await calendar.events.list(listOptions)
+        return data
+    } catch (err) {
+        console.log('There was an API error: ', err)
+    }
 }
 
 export default fetchEvents

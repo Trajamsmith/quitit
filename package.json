@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "tsc && node -r esm dist/index.js",
+        "start": "sudo tsc && node -r esm dist/index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -20,7 +20,9 @@
     "dependencies": {
         "cron-parser": "^2.13.0",
         "esm": "^3.2.25",
-        "googleapis": "^49.0.0"
+        "googleapis": "^49.0.0",
+        "moment": "^2.24.0",
+        "shelljs": "^0.8.3"
     },
     "devDependencies": {
         "@types/node": "^13.13.2",
