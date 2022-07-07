@@ -21,7 +21,7 @@
         "cron-parser": "^2.13.0",
         "esm": "^3.2.25",
         "googleapis": "^49.0.0",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "shelljs": "^0.8.3"
     },
     "devDependencies": {
